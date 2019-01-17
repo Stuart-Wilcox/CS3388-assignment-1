@@ -32,3 +32,9 @@ for (t = 0.0 ; t < 2.0*M_PI;) {
 ```
 ## Expected Resulting Image
 ![result](http://www.csd.uwo.ca/faculty/beau/CS3388/CS3388-Assign1-Output-Image.png "Resulting Image")
+
+## Instructions to run
+1. Make sure you have xlib11 installed. To install it, try `pacman -S xlib11-dev` (in arch linux), probably same name in other package managers.
+2. Compile the program by running `make main`
+3. Run the program by using `./main`. It should open a window with the expected graphic displayed
+4. Close the window by typing 'q' or clicking the 'X' button
