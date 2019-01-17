@@ -20,6 +20,8 @@ class MyWindow {
   void initializeWindow();
   void drawPixel(int x, int y);
   void drawLine(int x1, int y1, int x2, int y2);
+  void drawLineLow(int x1, int y1, int x2, int y2);
+  void drawLineHigh(int x1, int y1, int x2, int y2);
 
   public:
   MyWindow();

@@ -1,6 +1,10 @@
 #include "MyWindow.hpp"
 #include <math.h>
 
+int abs(int x){
+  return x > 0 ? x : -1 * x;
+}
+
 MyWindow::MyWindow(){
   display = XOpenDisplay((char *)0);
 
@@ -74,58 +78,71 @@ void MyWindow::draw(){
 }
 
 void MyWindow::drawLine(int x1, int y1, int x2, int y2){
-  if(x1 == x2){
-    for(int y = y1; y <= y2; y++){
-      drawPixel(x1, y);
-    }
-    return;
-  }
-  if(y1 == y2){
-    for(int x = x1; x <= x2; x++){
-      drawPixel(x, y1);
-    }
-    return;
-  }
-
-  bool flip = false;
-  if(x1 > x2 || y1 > y2){
-    int temp = x1;
-    x1 = x2;
-    x2 = temp;
-    temp = y1;
-    y1 = y2;
-    y2 = temp;
-  }
-
-  if((y2 - y1) / (x2 - x1) > 1){
-    int tempx = x1;
-    x1 = y1;
-    y1 = tempx;
-    tempx = x2;
-    x2 = y2;
-    y2 = tempx;
-
-    flip = true;
-  }
-  // assume x1 < x2 && y1 < y2
-  // assume 0 < slope < 1
-  int m = 2 * (y2 - y1);
-  int slopeError = m - (x2 - x1);
-
-  for(int x = x1, y = y1; x <= x2; x++){
-    if(!flip){
-      drawPixel(x, y);
+  if(abs(y2 - y1) < abs(x2 - x1)){
+    if(x1 > x2){
+      // draw line low, reverse ends
+      drawLineLow(x2, y2, x1, y1);
     }
     else {
-      drawPixel(y, x);
+      // draw line low, normal
+      drawLineLow(x1, y1, x2, y2);
     }
-
-    slopeError += m;
-
-    if(slopeError >= 0){
-      y++;
-      slopeError -= 2 * (x2 - x1);
+  }
+  else {
+    if(y1 > y2){
+      // draw line high, reverse ends
+      drawLineHigh(x2, y2, x1, y1);
     }
+    else {
+      // draw line low, reverse ends
+      drawLineHigh(x1, y1, x2, y2);
+    }
+  }
+}
+
+void MyWindow::drawLineLow(int x1, int y1, int x2, int y2){
+  int dx = x2 - x1;
+  int dy = y2 - y1;
+  int yi = 1;
+
+  if(dy < 0){
+    yi = -1;
+    dy *= dy;
+  }
+
+  int D = (2 * dy) - dx;
+  int y = y1;
+
+  for(int x = x1; x <= x2; x++){
+    drawPixel(x, y);
+    if(D > 0){
+      y += yi;
+      D -= 2 * dx;
+    }
+    D += 2 * dy;
+  }
+}
+
+void MyWindow::drawLineHigh(int x1, int y1, int x2, int y2){
+  int dx = x2 - x1;
+  int dy = y2 - y1;
+  int xi = 1;
+
+  if(dx < 0){
+    xi = -1;
+    dx *= -1;
+  }
+
+  int D = (2 * dx) - dy;
+  int x = x1;
+
+  for(int y = y1; y <= y2; y++){
+    drawPixel(x, y);
+    if(D > 0){
+      x += xi;
+      D -= 2 * dy;
+    }
+    D += 2 * dx;
   }
 }
 
