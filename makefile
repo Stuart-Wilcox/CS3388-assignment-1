@@ -1,4 +1,4 @@
 clean:
 	rm -rf main
-main: main.cpp
-	gcc -o main main.cpp -lX11
+main: main.cpp MyWindow.hpp MyWindow.cpp
+	gcc -o main main.cpp MyWindow.hpp MyWindow.cpp -lX11
