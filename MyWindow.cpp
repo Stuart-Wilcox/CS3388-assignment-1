@@ -75,6 +75,24 @@ void MyWindow::draw(){
 
     drawLine(x1, y1, x2, y2);
   }
+
+
+  // grid
+  // int x1 = 256, y1 = 256;
+  //
+  //
+  // for(int i = 0; i < 8; i++){
+  //   drawLine(x1, y1, 64 * i, 0);
+  // }
+  // for(int i = 0; i < 8; i++){
+  //   drawLine(x1, y1, 64 * i, 512);
+  // }
+  // for(int i = 0; i < 8; i++){
+  //   drawLine(x1, y1, 0, 64 * i);
+  // }
+  // for(int i = 0; i <= 8; i++){
+  //   drawLine(x1, y1, 512, 64 * i);
+  // }
 }
 
 void MyWindow::drawLine(int x1, int y1, int x2, int y2){
@@ -107,7 +125,7 @@ void MyWindow::drawLineLow(int x1, int y1, int x2, int y2){
 
   if(dy < 0){
     yi = -1;
-    dy *= dy;
+    dy *= -1;
   }
 
   int D = (2 * dy) - dx;
