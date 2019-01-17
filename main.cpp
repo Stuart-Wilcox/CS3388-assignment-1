@@ -5,9 +5,9 @@
 
 
 int main(int argc, char *argv[]){
-	MyWindow window;
+	MyWindow window; // create a window
 
-	window.show();
+	window.show(); // map and display graphic
 
 	return 0;
 }

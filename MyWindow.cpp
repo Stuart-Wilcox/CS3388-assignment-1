@@ -1,10 +1,12 @@
 #include "MyWindow.hpp"
 #include <math.h>
 
+// simple abs function
 int abs(int x){
   return x > 0 ? x : -1 * x;
 }
 
+// default constructor
 MyWindow::MyWindow(){
   display = XOpenDisplay((char *)0);
 
@@ -27,10 +29,12 @@ MyWindow::MyWindow(){
   initializeWindow();
 }
 
+// helper function
 Window MyWindow::createWindow(){
   return XCreateSimpleWindow(display, rootWindow, 300, 300, 512, 512, 5, black, white);
 }
 
+// must be called before using any graphics stuff
 void MyWindow::initializeWindow(){
   XSetStandardProperties(display, window, "My Window", "Hi!", None, NULL, 0, NULL);
 	XSetBackground(display, gc, white);
@@ -38,7 +42,9 @@ void MyWindow::initializeWindow(){
 	XSetFillStyle(display, gc, FillSolid);
 }
 
+// call this to show the contents of this.draw()
 void MyWindow::show(){
+  // map the window, then wait until the event "expose" occurs before calling draw
   XMapWindow(display, window);
 
   XEvent event;
@@ -55,6 +61,10 @@ void MyWindow::show(){
 
 		if(event.type == KeyPress && XLookupString(&event.xkey, text, 255, &key, 0) == 1){
 			printf("You pressed the %c key!\n", text[0]);
+      if(text[0] == 'q'){
+        close();
+        break;
+      }
 		}
 
 		if(event.type == ButtonPress){
@@ -63,6 +73,14 @@ void MyWindow::show(){
   }
 }
 
+// close the window
+void MyWindow::close(){
+  XFreeGC(display, gc);
+  XDestroyWindow(display, window);
+  XCloseDisplay(display);
+}
+
+// relies on lower level drawLine to make the required shape
 void MyWindow::draw(){
   double dt = 2.0 * M_PI / 200.0;
   for(double t = 0.0; t < 2.0 * M_PI; ){
@@ -95,6 +113,7 @@ void MyWindow::draw(){
   // }
 }
 
+// bresenham's algorithm
 void MyWindow::drawLine(int x1, int y1, int x2, int y2){
   if(abs(y2 - y1) < abs(x2 - x1)){
     if(x1 > x2){
@@ -118,6 +137,7 @@ void MyWindow::drawLine(int x1, int y1, int x2, int y2){
   }
 }
 
+// helper for drawLine
 void MyWindow::drawLineLow(int x1, int y1, int x2, int y2){
   int dx = x2 - x1;
   int dy = y2 - y1;
@@ -141,6 +161,7 @@ void MyWindow::drawLineLow(int x1, int y1, int x2, int y2){
   }
 }
 
+// helper for drawLine
 void MyWindow::drawLineHigh(int x1, int y1, int x2, int y2){
   int dx = x2 - x1;
   int dy = y2 - y1;
@@ -164,6 +185,7 @@ void MyWindow::drawLineHigh(int x1, int y1, int x2, int y2){
   }
 }
 
+// light one pixel at given position
 void MyWindow::drawPixel(int x, int y){
   XSetForeground(display, gc, black);
   XDrawPoint(display, window, gc, x, y);

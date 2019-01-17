@@ -27,4 +27,5 @@ class MyWindow {
   MyWindow();
   void show();
   void draw();
+  void close();
 };
