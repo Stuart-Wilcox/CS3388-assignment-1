@@ -1,4 +1,5 @@
 #include "MyWindow.hpp"
+#include <math.h>
 
 MyWindow::MyWindow(){
   display = XOpenDisplay((char *)0);
@@ -23,13 +24,13 @@ MyWindow::MyWindow(){
 }
 
 Window MyWindow::createWindow(){
-  return XCreateSimpleWindow(display, rootWindow, 100, 100, 1000, 1000, 5, white, black);
+  return XCreateSimpleWindow(display, rootWindow, 300, 300, 512, 512, 5, black, white);
 }
 
 void MyWindow::initializeWindow(){
   XSetStandardProperties(display, window, "My Window", "Hi!", None, NULL, 0, NULL);
-	XSetBackground(display, gc, black);
-	XSetForeground(display, gc, white);
+	XSetBackground(display, gc, white);
+	XSetForeground(display, gc, black);
 	XSetFillStyle(display, gc, FillSolid);
 }
 
@@ -59,19 +60,77 @@ void MyWindow::show(){
 }
 
 void MyWindow::draw(){
-  int x1 = 10, y1 = 10, x2 = 400, y2 = 400;
-  drawLine(x1, y1, x2, y2);
+  double dt = 2.0 * M_PI / 200.0;
+  for(double t = 0.0; t < 2.0 * M_PI; ){
+
+    int x1 = 256 + (int)100.0*(1.5*cos(t) - cos(13.0*t));
+    int y1 = 256 + (int)100.0*(1.5*sin(t) - sin(13.0*t));
+     t += dt;
+    int x2 = 256 + (int)100.0*(1.5*cos(t) - cos(13.0*t));
+    int y2 = 256 + (int)100.0*(1.5*sin(t) - sin(13.0*t));
+
+    drawLine(x1, y1, x2, y2);
+  }
 }
 
 void MyWindow::drawLine(int x1, int y1, int x2, int y2){
-  /* LOGIC GOES HERE */
-  for(int x = 100; x < 400; x++){
-    drawPixel(x, x);
+  if(x1 == x2){
+    for(int y = y1; y <= y2; y++){
+      drawPixel(x1, y);
+    }
+    return;
+  }
+  if(y1 == y2){
+    for(int x = x1; x <= x2; x++){
+      drawPixel(x, y1);
+    }
+    return;
+  }
+
+  bool flip = false;
+  if(x1 > x2 || y1 > y2){
+    int temp = x1;
+    x1 = x2;
+    x2 = temp;
+    temp = y1;
+    y1 = y2;
+    y2 = temp;
+  }
+
+  if((y2 - y1) / (x2 - x1) > 1){
+    int tempx = x1;
+    x1 = y1;
+    y1 = tempx;
+    tempx = x2;
+    x2 = y2;
+    y2 = tempx;
+
+    flip = true;
+  }
+  // assume x1 < x2 && y1 < y2
+  // assume 0 < slope < 1
+  int m = 2 * (y2 - y1);
+  int slopeError = m - (x2 - x1);
+
+  for(int x = x1, y = y1; x <= x2; x++){
+    if(!flip){
+      drawPixel(x, y);
+    }
+    else {
+      drawPixel(y, x);
+    }
+
+    slopeError += m;
+
+    if(slopeError >= 0){
+      y++;
+      slopeError -= 2 * (x2 - x1);
+    }
   }
 }
 
 void MyWindow::drawPixel(int x, int y){
-  XSetForeground(display, gc, white);
+  XSetForeground(display, gc, black);
   XDrawPoint(display, window, gc, x, y);
   XFlush(display);
 }
